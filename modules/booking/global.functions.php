@@ -557,12 +557,11 @@ function date_from_to($time)
 
 function list_doctor_branch($branch_id)
 {
-	global $db, $module_name, $module_data;
+	global $db, $module_name, $module_data,$db_config;
 	if(!$branch_id)
 		return array();
 	
-	$list = $db->query('SELECT u.userid FROM vidoco_users u RIGHT JOIN vidoco_users_groups_users gu ON (u.userid = gu.userid) LEFT JOIN vidoco_vi_booking_branch_users bu ON (u.userid = bu.userid) WHERE u.active = 1 AND gu.group_id=10 AND branch_id =' . $branch_id)->fetchAll();
-	
+	$list = $db->query('SELECT u.userid FROM ' . $db_config['prefix'] . '_users u RIGHT JOIN ' . $db_config['prefix'] . '_users_groups_users gu ON (u.userid = gu.userid) LEFT JOIN ' . NV_PREFIXLANG . '_booking_branch_users bu ON (u.userid = bu.userid) WHERE u.active = 1 AND gu.group_id=10 AND branch_id =' . $branch_id)->fetchAll();
 	$array_doctor = array();
 	
 	foreach($list as $u)
@@ -577,7 +576,7 @@ function list_doctor_branch($branch_id)
 
 function list_doctor_branch_new($branch_id, $time)
 {
-	global $db, $module_name, $module_data;
+	global $db, $module_name, $module_data,$db_config;
 	if(!$branch_id or !$time)
 		return array();
 	
@@ -589,7 +588,7 @@ function list_doctor_branch_new($branch_id, $time)
 	// lấy danh sách bác sĩ thuộc chi nhánh $branch_id trong ngày $time
 	
 	// lấy tất cả bác sĩ trong bệnh viện ra
-	$list_doctor = $db->query('SELECT u.userid, bu.time_from, bu.time_to  FROM vidoco_users u RIGHT JOIN vidoco_users_groups_users gu ON (u.userid = gu.userid) LEFT JOIN vidoco_vi_booking_branch_users bu ON (u.userid = bu.userid) WHERE u.active = 1 AND gu.group_id=10 ORDER BY u.userid DESC')->fetchAll();
+	$list_doctor = $db->query('SELECT u.userid, bu.time_from, bu.time_to  FROM ' . $db_config['prefix'] . '_users u RIGHT JOIN ' . $db_config['prefix'] . '_users_groups_users gu ON (u.userid = gu.userid) LEFT JOIN ' . NV_PREFIXLANG . '_booking_branch_users bu ON (u.userid = bu.userid) WHERE u.active = 1 AND gu.group_id=10 ORDER BY u.userid DESC')->fetchAll();
 	
 	$arr = array();
 	
@@ -601,7 +600,7 @@ function list_doctor_branch_new($branch_id, $time)
 		if(($time >= $doctor['time_from']  and $time <= $doctor['time_to']) or ($doctor['time_from'] == 0 and $doctor['time_to'] == 0) or ($time >= $doctor['time_from']  and $doctor['time_to'] == 0))
 		{
 			// tiếp tục kiểm tra @time này bác sĩ này đang công tác ở chi nhánh nào
-			$get_info_chinhanh_time = $db->query('SELECT id_branch FROM vidoco_vi_booking_history_branch_doctor WHERE date_change <=' . $time .'  AND userid_doctor ='. $doctor['userid'])->fetchColumn();
+			$get_info_chinhanh_time = $db->query('SELECT id_branch FROM ' . NV_PREFIXLANG . '_booking_history_branch_doctor WHERE date_change <=' . $time .'  AND userid_doctor ='. $doctor['userid'])->fetchColumn();
 			
 			// tại thời điểm này bác sĩ đang công tác ở chi nhánh khác rồi
 			
@@ -620,7 +619,7 @@ function list_doctor_branch_new($branch_id, $time)
 			{
 			
 				// tiếp tục kiểm tra chi nhánh hiện tại bác sĩ đang làm có cùng chi nhánh yêu cầu không
-				$get_info_chinhanh_current = $db->query('SELECT userid FROM vidoco_vi_booking_branch_users WHERE branch_id =' . $branch_id .'  AND userid ='. $doctor['userid'])->fetchColumn();
+				$get_info_chinhanh_current = $db->query('SELECT userid FROM ' . NV_PREFIXLANG . '_booking_branch_users WHERE branch_id =' . $branch_id .'  AND userid ='. $doctor['userid'])->fetchColumn();
 				
 			
 				
@@ -835,14 +834,14 @@ function getService()
 }
 
 function get_list_doctor_select2($q){
-	global $db, $db_config,$module_data;
+	global $db, $db_config,$module_data,$db_config;
 
 	$list_doctor = $db->query('SELECT t1.* FROM ' . $db_config['prefix'] . '_users t1 RIGHT JOIN ' . $db_config['prefix'] . '_users_groups_users t2 ON t1.userid = t2.userid LEFT JOIN ' . TABLE_APPOINTMENT_NAME . '_branch_users t3 ON t1.userid = t3.userid WHERE t1.last_name LIKE "%'.$q.'%" AND t2.group_id=10')->fetchAll();
 	return $list_doctor;
 }
 
 function get_info_doctor($id){
-	global $db, $db_config,$module_data;
+	global $db, $db_config,$module_data,$db_config;
 	
 	if(!$id)
 		return array();

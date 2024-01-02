@@ -59,78 +59,162 @@ if( ! nv_function_exists( 'nukevn_block_register' ) )
 
 	$time_work2 = array(
 		'gio' => 8,
-		'phut' => 40 
+		'phut' => 20 
 	);
 
 	$time_work3 = array(
+		'gio' => 8,
+		'phut' => 40 
+	);
+
+	$time_work4 = array(
+		'gio' => 9,
+		'phut' => 0
+	);
+
+	$time_work5 = array(
 		'gio' => 9,
 		'phut' => 20 
 	);
 
-	$time_work4 = array(
+	$time_work6 = array(
+		'gio' => 9,
+		'phut' => 40 
+	);
+
+	$time_work7 = array(
 		'gio' => 10,
 		'phut' => 0 
 	);
 
-	$time_work5 = array(
-		'gio' => 10,
-		'phut' => 40 
-	);
-
-	$time_work6 = array(
-		'gio' => 11,
-		'phut' => 20 
-	);
-
-	$time_work7 = array(
-		'gio' => 13,
-		'phut' => 30 
-	);
-
 	$time_work8 = array(
-		'gio' => 14,
-		'phut' => 10 
+		'gio' => 10,
+		'phut' => 20 
 	);
 
 
 	$time_work9 = array(
-		'gio' => 14,
-		'phut' => 50 
+		'gio' => 10,
+		'phut' => 40 
 	);
 
 	$time_work10 = array(
-		'gio' => 15,
-		'phut' => 30 
+		'gio' => 11,
+		'phut' => 0 
 	);
 
 	$time_work11 = array(
-		'gio' => 16,
-		'phut' => 10 
+		'gio' => 11,
+		'phut' => 20 
 	);
 
 	$time_work12 = array(
-		'gio' => 16,
-		'phut' => 50 
+		'gio' => 11,
+		'phut' => 40 
 	);
 
 	$time_work13 = array(
-		'gio' => 17,
-		'phut' => 30 
+		'gio' => 12,
+		'phut' => 0 
 	);
 
 	$time_work14 = array(
-		'gio' => 18,
-		'phut' => 10 
+		'gio' => 12,
+		'phut' => 20 
 	);
 
 	$time_work15 = array(
-		'gio' => 18,
-		'phut' => 50 
+		'gio' => 12,
+		'phut' => 40 
 	);
 
 	$time_work16 = array(
+		'gio' => 13,
+		'phut' => 0 
+	);
+	$time_work17 = array(
+		'gio' => 13,
+		'phut' => 20 
+	);
+	$time_work18 = array(
+		'gio' => 13,
+		'phut' => 40 
+	);
+	$time_work19 = array(
+		'gio' => 14,
+		'phut' => 0 
+	);
+	$time_work20 = array(
+		'gio' => 14,
+		'phut' => 20 
+	);
+	$time_work21 = array(
+		'gio' => 14,
+		'phut' => 40 
+	);
+	$time_work22 = array(
+		'gio' => 15,
+		'phut' => 0 
+	);
+	$time_work23 = array(
+		'gio' => 15,
+		'phut' => 20 
+	);
+	$time_work24 = array(
+		'gio' => 15,
+		'phut' => 40 
+	);
+	$time_work25 = array(
+		'gio' => 16,
+		'phut' => 0 
+	);
+	$time_work26 = array(
+		'gio' => 16,
+		'phut' => 20 
+	);
+	$time_work27 = array(
+		'gio' => 16,
+		'phut' => 40 
+	);
+	$time_work28 = array(
+		'gio' => 17,
+		'phut' => 0 
+	);
+	$time_work29 = array(
+		'gio' => 17,
+		'phut' => 20 
+	);
+	$time_work30 = array(
+		'gio' => 17,
+		'phut' => 40 
+	);
+	$time_work31 = array(
+		'gio' => 18,
+		'phut' => 0 
+	);
+	$time_work32 = array(
+		'gio' => 18,
+		'phut' => 20 
+	);
+	$time_work33 = array(
+		'gio' => 18,
+		'phut' => 40 
+	);
+	$time_work34 = array(
 		'gio' => 19,
-		'phut' => 30 
+		'phut' => 0 
+	);
+	$time_work35 = array(
+		'gio' => 19,
+		'phut' => 20 
+	);
+	$time_work36 = array(
+		'gio' => 19,
+		'phut' => 40 
+	);
+	$time_work37 = array(
+		'gio' => 20,
+		'phut' => 0 
 	);
 
 
@@ -150,7 +234,27 @@ if( ! nv_function_exists( 'nukevn_block_register' ) )
 		'13' => $time_work13,
 		'14' => $time_work14,
 		'15' => $time_work15,
-		'16' => $time_work16
+		'16' => $time_work16,
+		'17' => $time_work17,
+		'18' => $time_work18,
+		'19' => $time_work19,
+		'20' => $time_work20,
+		'21' => $time_work21,
+		'22' => $time_work22,
+		'23' => $time_work23,
+		'24' => $time_work24,
+		'25' => $time_work25,
+		'26' => $time_work26,
+		'27' => $time_work27,
+		'28' => $time_work28,
+		'29' => $time_work29,
+		'31' => $time_work31,
+		'32' => $time_work32,
+		'33' => $time_work33,
+		'34' => $time_work34,
+		'35' => $time_work35,
+		'36' => $time_work36,
+		'37' => $time_work37
 	);
 		
 		

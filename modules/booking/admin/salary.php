@@ -492,7 +492,7 @@ $base_url.= '&amp;sort=' . $sort . '&amp;order=' . $order . '&amp;per_page=' . $
 
 $num_items = $db->query( 'SELECT COUNT(*) FROM ' . $sql )->fetchColumn();
 
-$db->sqlreset()->select( 'u.userid, u.username, CONCAT(u.last_name,\' \', u.first_name) AS full_name, u.email, u.address, u.regdate, u.active, bu.branch_id' )->from( $sql )->limit( $per_page )->offset( ( $page - 1 ) * $per_page );
+$db->sqlreset()->select( 'u.userid, u.username, CONCAT(u.last_name,\' \', u.first_name) AS full_name, u.email,  u.regdate, u.active, bu.branch_id' )->from( $sql )->limit( $per_page )->offset( ( $page - 1 ) * $per_page );
 
 
 $result = $db->query( $db->sql() );

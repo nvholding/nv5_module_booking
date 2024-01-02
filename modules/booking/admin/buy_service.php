@@ -127,7 +127,7 @@ while ($_row = $_query->fetch()) {
 }
 
 $array_userid_booking = array();
-$_sql = 'SELECT userid,full_name FROM ' . NV_PREFIXLANG . '_' . $module_data . '_patient';
+$_sql = 'SELECT userid,full_name,phone FROM ' . NV_PREFIXLANG . '_' . $module_data . '_patient';
 $_query = $db->query($_sql);
 while ($_row = $_query->fetch()) {
     $array_userid_booking[$_row['userid']] = $_row;
@@ -198,7 +198,7 @@ foreach ($array_service_id_booking as $value) {
 foreach ($array_userid_booking as $value) {
     $xtpl->assign('OPTION', array(
         'key' => $value['userid'],
-        'title' => $value['full_name'],
+        'title' => $value['full_name'] . '-' . $value['phone'],
         'selected' => ($value['userid'] == $row['userid']) ? ' selected="selected"' : ''
     ));
     $xtpl->parse('main.select_userid');

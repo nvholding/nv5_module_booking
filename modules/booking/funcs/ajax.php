@@ -433,7 +433,7 @@ if( ACTION_METHOD == 'delete_register_all' )
 	print_r(json_encode($json[0]));die();
 }
 
-if($mod=='register_medical'){
+if(ACTION_METHOD== 'register_medical'){
 
 	$data['customer_full_name'] = nv_substr( $nv_Request->get_title( 'booking_name', 'post', '', '' ), 0, 250 );
 	$data['customer_phone'] = nv_substr( $nv_Request->get_title( 'booking_phone', 'post', '', '' ), 0, 250 );
@@ -601,8 +601,8 @@ if($mod=='register_medical'){
 	*/
 
 
-	$data['doctors_id'] = $nv_Request->get_int( 'doctors_id', 'post,get', 0 );
-
+	$datadoctors_id = $nv_Request->get_array( 'doctors_id', 'post,get', 0 );
+	$data['doctors_id'] = $datadoctors_id[0];
 
 
 
@@ -622,7 +622,7 @@ if($mod=='register_medical'){
 				}
 				
 				//$user_id = $getUserid;
-				
+				$user_id = 0;
 				if($check_email)
 				{
 					$user_id = $check_email;
@@ -697,13 +697,11 @@ if($mod=='register_medical'){
 					$birthday = 0;
 					
 					
-
 					$db->query( 'INSERT INTO ' . NV_PREFIXLANG . '_' . $module_data . '_patient(userid,patient_group,full_name,confess,phone,service_package_id,gender,birthday,address,patient_code,date_added,branch) VALUES('.$user_id. ',' . $data['patient_group'] . ', "' . $data['customer_full_name'] . '", "Quý khách","' . $data['customer_phone'] . '", ' . $data['service_package_id'] . ', "' . $data['gender'] . '",' . $birthday . ', "' . $data['address'] . '", "' . $patient_code . '", ' . NV_CURRENTTIME . ', ' . $data['branch_id'] . ' )' );
 					
 				}
 			}
 		}
-
 		$stmt = $db->prepare( 'INSERT INTO ' .  NV_PREFIXLANG . '_' . $module_data . '_appointment SET 
 			sms_result=:sms_result,
 			customer_full_name=:customer_full_name,
@@ -754,17 +752,17 @@ if($mod=='register_medical'){
 		$data['customer_time_set'] = str_replace(' ','',$data['customer_time_set']);
 
 		
-		$json['success'] = 'Cảm ơn '. $confess .' ' . $customer_name . ' đã đặt lịch hẹn trị liệu tại Cơ Xương Khớp Thiện Nhân lúc ' . $data['customer_time_set'] . ', ngày ' . date('d/m/Y',$data['customer_date_booking']) . ', Vui lòng đến trước 10 phút để nghỉ ngơi, ổn định huyết áp trước khi trị liệu. Trân trọng cảm ơn!';
+		$json['success'] = 'Cảm ơn '. $confess .' ' . $customer_name . ' đã đặt lịch hẹn trị liệu tại Thiênh Phát lúc ' . $data['customer_time_set'] . ', ngày ' . date('d/m/Y',$data['customer_date_booking']) . ', Vui lòng đến trước 10 phút để nghỉ ngơi, ổn định huyết áp trước khi trị liệu. Trân trọng cảm ơn!';
 	
-		$email_title = 'CƠ XƯƠNG KHỚP THIỆN NHÂN - [BÁO LỊCH HẸN]';
+		$email_title = 'THIỆN PHÁT - [BÁO LỊCH HẸN]';
 		
 		$lienhe ='<br /><br />Thông tin liên hệ:<br />
-CƠ SỞ TRỊ LIỆU CƠ XƯƠNG KHỚP THIỆN NHÂN<br />
-Địa chỉ: 112/36 Tây Hòa , Phước Long A, Tp Thủ Đức, Tp Hồ Chí Minh<br />
+THIỆN PHÁT<br />
+Địa chỉ: 2/14 Tăng Bạt Hổ, P11, Q.Bình Thạnh, Tp Hồ Chí Minh<br />
 Chi nhánh Tân Bình: 277 Hoàng Văn Thụ, Phường 2, Tân Bình, Thành phố Hồ Chí Minh<br />
 Chi nhánh Quận 9: 112/36 Tây Hòa, Phước Long A, Quận 9, Thành phố Hồ Chí Minh<br />
-Điện thoại: 028.9999 44 55 - 0336 044 055<br />
-Email: <a href="mailto:thiennhan.tdcs@gmail.com" target="_blank">thiennhan.tdcs@gmail.com</a>';
+Điện thoại: 0923998879<br />
+Email: <a href="mailto:thienphat.sg@gmail.com" target="_blank">thienphat.sg@gmail.com</a>';
 
 		if($global_config['site_email'])
 		{
@@ -807,7 +805,7 @@ Email: <a href="mailto:thiennhan.tdcs@gmail.com" target="_blank">thiennhan.tdcs@
 		
 		if(!empty($data['customer_email']))
 		{
-			$content_customer = 'Cảm ơn '. $confess .' ' . $customer_name . ' đã đặt lịch hẹn trị liệu tại Cơ Xương Khớp Thiện Nhân lúc ' . $data['customer_time_set'] . ', ngày ' . date('d/m/Y',$data['customer_date_booking']) . ', Vui lòng đến trước 10 phút để nghỉ ngơi, ổn định huyết áp trước khi trị liệu. Trân trọng cảm ơn!';
+			$content_customer = 'Cảm ơn '. $confess .' ' . $customer_name . ' đã đặt lịch hẹn trị liệu tại THIỆN PHÁT lúc ' . $data['customer_time_set'] . ', ngày ' . date('d/m/Y',$data['customer_date_booking']) . ', Vui lòng đến trước 10 phút để nghỉ ngơi, ổn định huyết áp trước khi trị liệu. Trân trọng cảm ơn!';
 			$content_customer .= $lienhe;
 			
 			$kh = nv_sendmail(array($global_config['site_name'], $config_email['sender_email']['config_value']), $data['customer_email'], sprintf($email_title, $module_info['custom_title'], $order_code), $content_customer);
@@ -821,7 +819,7 @@ Email: <a href="mailto:thiennhan.tdcs@gmail.com" target="_blank">thiennhan.tdcs@
 		if( $data['appointment_id'] = $db->lastInsertId() )
 		{
 
-			$json['success'] = 'Cảm ơn '. $confess .' ' . $customer_full_name . ' đã đặt lịch hẹn trị liệu tại Cơ Xương Khớp Thiện Nhân lúc ' . $data['customer_time_set'] . ', ngày ' . date('d/m/Y',$data['customer_date_booking']) . ', Vui lòng đến trước 10 phút để nghỉ ngơi, ổn định huyết áp trước khi trị liệu. Trân trọng cảm ơn!';
+			$json['success'] = 'Cảm ơn '. $confess .' ' . $customer_full_name . ' đã đặt lịch hẹn trị liệu tại THIỆN PHÁT lúc ' . $data['customer_time_set'] . ', ngày ' . date('d/m/Y',$data['customer_date_booking']) . ', Vui lòng đến trước 10 phút để nghỉ ngơi, ổn định huyết áp trước khi trị liệu. Trân trọng cảm ơn!';
 		}
 	}
 	catch ( PDOException $e )
@@ -829,6 +827,8 @@ Email: <a href="mailto:thiennhan.tdcs@gmail.com" target="_blank">thiennhan.tdcs@
 		$error['save'] = $lang_module['appointment_error_save'];
 		// var_dump( $e ); die();
 	}	
+}else{
+	die;
 }
 
 }
@@ -934,7 +934,7 @@ if($mod=='get_info_user'){
 	
 	$info = $db->query('SELECT phone, full_name as name FROM ' .  NV_PREFIXLANG . '_' . $module_data . '_patient WHERE userid ='. $userid)->fetch();
 	
-	$info['email'] = $db->query('SELECT email FROM vidoco_users WHERE userid ='. $userid)->fetchColumn();
+	$info['email'] = $db->query('SELECT email FROM ' . $db_config['prefix'] . '_users WHERE userid ='. $userid)->fetchColumn();
 	
 	
 	$info['doctor'] = 0;

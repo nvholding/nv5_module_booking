@@ -35,7 +35,7 @@ while ($_row = $_query->fetch()) {
 }
 
 $array_id_branch_booking = array();
-$_sql = 'SELECT branch_id,title FROM vidoco_vi_booking_branch';
+$_sql = 'SELECT branch_id,title FROM ' . NV_PREFIXLANG . '_booking_branch';
 $_query = $db->query($_sql);
 while ($_row = $_query->fetch()) {
     $array_id_branch_booking[$_row['branch_id']] = $_row;

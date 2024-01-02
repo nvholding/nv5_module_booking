@@ -44,7 +44,7 @@
 						Tài khoản/Điện thoại
 					</label> 
 					<div class=" col-sm-20">
-						<input class="form-control" id="phone" name="phone" value="{DATA.username}" placeholder="{LANG.doctors_phone}" type="text" >
+						<input class="form-control" id="phone" name="phone" value="{DATA.phone}" placeholder="{LANG.doctors_phone}" type="text" >
 						<!-- BEGIN: error_phone -->
 						<div class="text-danger">
 							{error_phone}

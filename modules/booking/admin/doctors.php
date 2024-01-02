@@ -113,21 +113,26 @@ elseif( ACTION_METHOD == 'add' || ACTION_METHOD == 'edit' )
 	$data['userid'] = $nv_Request->get_int( 'userid', 'get,post', 0 );
 	if( $data['userid'] > 0 )
 	{
-		$data = $db->query( 'SELECT u.gender,u.birthday,u.userid, u.username, CONCAT(u.last_name,\'\', u.first_name) AS full_name, u.email, u.address, u.regdate, u.active, bu.branch_id, bu.time_from, bu.time_to FROM 
+		$data = $db->query( 'SELECT u.gender,u.birthday,u.userid, u.username, CONCAT(u.last_name,\'\', u.first_name) AS full_name, u.email,  u.regdate, u.active, bu.branch_id, bu.time_from, bu.time_to, b.address FROM 
 			' . NV_USERS_GLOBALTABLE . ' u  RIGHT JOIN ' . NV_USERS_GLOBALTABLE . '_groups_users gu ON (u.userid = gu.userid) 
-			LEFT JOIN ' . TABLE_APPOINTMENT_NAME . '_branch_users bu ON (u.userid = bu.userid) WHERE u.userid=' . $data['userid'] )->fetch();
+			LEFT JOIN ' . TABLE_APPOINTMENT_NAME . '_branch_users bu ON (u.userid = bu.userid)
+			LEFT JOIN ' . TABLE_APPOINTMENT_NAME . '_branch b ON (bu.branch_id = b.branch_id)
+			WHERE u.userid=' . $data['userid'] )->fetch();
 
 		$caption = $lang_module['doctors_update'];
+		$data['phone'] =  $data['username'];
 	}
 	else
 	{
 		$caption = $lang_module['doctors_add'];
+		$data['full_name'] = implode(' ', $full_name);
 	}
 
 	if( $nv_Request->get_int( 'save', 'post' ) == 1 )
 	{
 		$full_name = trim( nv_substr( $nv_Request->get_title( 'full_name', 'post', '', '' ), 0, 250 ) );
 		$data['phone'] =trim(  nv_substr( $nv_Request->get_title( 'phone', 'post', '', '' ), 0, 250 ));
+		$data['md5username'] = nv_md5safe($data['phone']);
 		$data['email'] = trim( nv_substr( $nv_Request->get_title( 'email', 'post', '', '' ), 0, 250 ));
 		$data['address'] = trim( nv_substr( $nv_Request->get_title( 'address', 'post', '', '' ), 0, 250 ));
 		$data['active'] = $nv_Request->get_int( 'active', 'post', 1 );
@@ -179,17 +184,93 @@ elseif( ACTION_METHOD == 'add' || ACTION_METHOD == 'edit' )
 		if( empty( $full_name ) ) $error['full_name'] = $lang_module['doctors_error_full_name'];
 		if( empty( $data['phone'] ) ) $error['phone'] = $lang_module['doctors_error_phone'];
 		if( empty( $data['email'] ) ) $error['email'] = $lang_module['doctors_error_email'];
-		if( empty( $data['address'] ) ) $error['address'] = $lang_module['doctors_error_address'];
 		if( empty( $data['branch_id'] ) ) $error['branch_id'] = $lang_module['doctors_error_branch'];
-
-		if( ! empty( $error ) && ! isset( $error['warning'] ) )
-		{
-			$error['warning'] = $lang_module['doctors_error_warning'];
-		}
+		if( ( $error_username = nv_check_valid_login( $data['phone'], $global_config['nv_unickmax'], $global_config['nv_unickmin'] ) ) != '' )
+			{
+				$error['phone'] =  $error_username;
+			}
+			else if( "'" . $data['phone'] . "'" != $db->quote( $data['phone'] ) )
+			{
+				$error['phone'] =  sprintf( $lang_module['patient_account_deny_name'], $data['phone'] );
+			}
+			else
+			{
+				
+				// Thực hiện câu truy vấn để kiểm tra username đã tồn tại chưa.
+				$stmt = $db->prepare( 'SELECT userid FROM ' . NV_USERS_GLOBALTABLE . ' WHERE md5username= :md5username AND userid != ' .intval( $data['userid'] ) );
+				$stmt->bindParam( ':md5username', $data['md5username'], PDO::PARAM_STR );
+				$stmt->execute();
+				$query_error_username = $stmt->fetchColumn();
+				if( $query_error_username )
+				{
+					$error['phone'] = $lang_module['patient_error_phone_exist'];
+				}
+				
+				
+			}
+			
+			$check_phone = $db->query('SELECT count(*) FROM ' . NV_PREFIXLANG . '_' . $module_data . '_patient WHERE phone = "' . $data['phone'] . '" AND userid != ' . $data['userid'])->fetchColumn();
+			if($check_phone != 0){
+				$error['phone'] = 'Số điện thoại này đã tồn tại';
+			}
+			
+			$error_xemail = nv_check_valid_email( $data['email'], true );
+			
+			
+			
+			if( $error_xemail[0] != '' )
+			{
+				$error['email'] = $error_xemail[0];
+			}
+			$data['email'] = $error_xemail[1];
+			
+			
+			
+			if( !isset( $error['email'] ) )
+			{
+				
+				// Thực hiện câu truy vấn để kiểm tra email đã tồn tại chưa.
+				$stmt = $db->prepare( 'SELECT userid FROM ' . NV_USERS_GLOBALTABLE . ' WHERE email= :email AND userid != ' .intval( $data['userid'] ) );
+				$stmt->bindParam( ':email', $data['email'], PDO::PARAM_STR );
+				$stmt->execute();
+				$query_error_email = $stmt->fetchColumn();
+				if( $query_error_email )
+				{
+					$error['email'] = $lang_module['patient_error_email_exist'];
+				}
+			}
+			
+			if( !isset( $error['email'] ) )
+			{
+				
+				// Thực hiện câu truy vấn để kiểm tra email đã tồn tại trong nv4_users_reg  chưa.
+				$stmt = $db->prepare( 'SELECT userid FROM ' . NV_USERS_GLOBALTABLE . '_reg WHERE email= :email' );
+				$stmt->bindParam( ':email', $data['email'], PDO::PARAM_STR );
+				$stmt->execute();
+				$query_error_email_reg = $stmt->fetchColumn();
+				if( $query_error_email_reg )
+				{
+					$error['email'] = $lang_module['patient_error_email_exist'];
+				}
+			}
+			if( !isset( $error['email'] ) )
+			{
+				
+				// Thực hiện câu truy vấn để kiểm tra email đã tồn tại trong nv3_users_openid chưa.
+				$stmt = $db->prepare( 'SELECT userid FROM ' . NV_USERS_GLOBALTABLE . '_openid WHERE email= :email' );
+				$stmt->bindParam( ':email', $data['email'], PDO::PARAM_STR );
+				$stmt->execute();
+				$query_error_email_openid = $stmt->fetchColumn();
+				if( $query_error_email_openid )
+				{
+					$error['email'] = 'email: ' . $lang_module['patient_error_email_exist'];
+				}
+			}
+			
 
 		if( empty( $error ) )
 		{
-			$data['md5username'] = nv_md5safe($data['phone']);
+			
 			
 			try
 			{
@@ -203,19 +284,17 @@ elseif( ACTION_METHOD == 'add' || ACTION_METHOD == 'edit' )
 					$data['is_email_verified']= -1;
 
 					$sql = "INSERT INTO " . NV_USERS_GLOBALTABLE . " (
-					group_id, username,service_package_id, md5username, password, email, phone, address, first_name, last_name, gender, birthday, sig, regdate,
+					group_id, username, md5username, password, email, phone, first_name, last_name, gender, birthday, sig, regdate,
 					question, answer, passlostkey, view_mail,
 					remember, in_groups, active, checknum, last_login, last_ip, last_agent, last_openid, email_verification_time,
 					active_obj
 					) VALUES (
 					" . $data['in_groups_default'] . ",
 					:username,
-					" . intval( $data['service_package_id'] ) . ",
 					:md5_username,
 					:password,
 					:email, 
 					:phone, 
-					:address,
 					:first_name,
 					:last_name,
 					:gender,
@@ -237,7 +316,6 @@ elseif( ACTION_METHOD == 'add' || ACTION_METHOD == 'edit' )
 				$data_insert['password'] = $data['password'];
 				$data_insert['email'] = $data['email'];  
 				$data_insert['phone'] = $data['phone'];  
-				$data_insert['address'] = $data['address'];
 				$data_insert['first_name'] = $data['first_name'];
 				$data_insert['last_name'] = $data['last_name'];
 				$data_insert['gender'] = $data['gender'];
@@ -264,7 +342,6 @@ elseif( ACTION_METHOD == 'add' || ACTION_METHOD == 'edit' )
 					password=:password,
 					username=:username,
 					md5username=:md5username,
-					address=:address,
 					active=' . intval( $data['active'] ) .'
 					WHERE userid=' . intval( $data['userid'] ) );
 				$stmt->bindParam( ':password', $data['password'], PDO::PARAM_STR );
@@ -273,7 +350,6 @@ elseif( ACTION_METHOD == 'add' || ACTION_METHOD == 'edit' )
 				$stmt->bindParam( ':email', $data['email'], PDO::PARAM_STR );
 				$stmt->bindParam( ':username', $data['phone'], PDO::PARAM_STR );
 				$stmt->bindParam( ':md5username', $data['md5username'], PDO::PARAM_STR );
-				$stmt->bindParam( ':address', $data['address'], PDO::PARAM_STR );
 
 				if( $stmt->execute() ) 
 				{
@@ -441,7 +517,8 @@ else
 
 $sql = 	NV_USERS_GLOBALTABLE . ' u 
 RIGHT JOIN ' . NV_USERS_GLOBALTABLE . '_groups_users gu ON (u.userid = gu.userid) 
-LEFT JOIN ' . TABLE_APPOINTMENT_NAME . '_branch_users bu ON (u.userid = bu.userid)';
+LEFT JOIN ' . TABLE_APPOINTMENT_NAME . '_branch_users bu ON (u.userid = bu.userid)
+LEFT JOIN ' . TABLE_APPOINTMENT_NAME . '_branch b ON (bu.branch_id = b.branch_id)';
 
 
 $implode = array();
@@ -518,7 +595,7 @@ $base_url.= '&amp;sort=' . $sort . '&amp;order=' . $order . '&amp;per_page=' . $
 
 $num_items = $db->query( 'SELECT COUNT(*) FROM ' . $sql )->fetchColumn();
 
-$db->sqlreset()->select( 'u.userid, u.username, CONCAT(u.last_name,\' \', u.first_name) AS full_name, u.email, u.address, u.regdate, u.active, bu.branch_id' )->from( $sql )->limit( $per_page )->offset( ( $page - 1 ) * $per_page );
+$db->sqlreset()->select( 'u.userid, u.username, CONCAT(u.last_name,\' \', u.first_name) AS full_name, u.email,  u.regdate, u.active, bu.branch_id, b.address' )->from( $sql )->limit( $per_page )->offset( ( $page - 1 ) * $per_page );
 
 
 $result = $db->query( $db->sql() );

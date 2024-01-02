@@ -18,7 +18,7 @@
 				</tr>
 				<tr>
 					<td style="width:280px"><strong>{LANG.setting_booking_time}</strong></td>
-					<td>						<input type="text" class="form-control" name="booking_time" value="{DATA.booking_time}" placeholder="{LANG.booking_time_help}" style="width:150px;display:inline-block"> {LANG.setting_hour}					</td>
+					<td>						<input type="text" class="form-control" name="booking_time" value="{DATA.booking_time}" placeholder="{LANG.booking_time_help}" style="width:150px;display:inline-block"> {LANG.setting_hour}					</td>
 				</tr>
 				<tr>
 					<td style="width:280px"><strong>{LANG.setting_space_time}</strong></td>

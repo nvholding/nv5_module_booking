@@ -148,7 +148,6 @@
 			last_name="",
 			email="' . $data['email'] . '",
 			phone="' . $data['phone'] . '",
-			address="' . $data['address'] . '",
 			birthday="' . $data['birthday'] . '"
 			WHERE userid=' . intval( $data['userid'] ) );
 			$stmt->execute();
@@ -411,7 +410,7 @@
 								try{
 									
 									$sql = "INSERT INTO " . $db_config['prefix'] . "_users (
-									group_id, username, md5username, password, first_name, phone, address, gender, email, sig, birthday, regdate,
+									group_id, username, md5username, password, first_name, phone, gender, email, sig, birthday, regdate,
 									question, answer, passlostkey, view_mail,
 									remember, in_groups, active, checknum, last_login, last_ip, last_agent, last_openid, email_verification_time,
 									active_obj
@@ -422,7 +421,6 @@
 									'" .$value_user['password']."',
 									'" .$value_user['name']."',
 									'" .$value_user['phone']."',
-									'" .$value_user['address']."',
 									'" .$value_user['gender']."',
 									'" .$value_user['email']."', 
 									'" .$value_user['sig']."',
@@ -504,7 +502,6 @@
 									last_name="",
 									email="' . $value_user['email'] . '",
 									phone="' . $value_user['phone'] . '",
-									address="' . $value_user['address'] . '",
 									gender="' . $value_user['gender'] . '",
 									birthday="' . $value_user['birthday'] . '"
 									WHERE userid=' . intval( $userid ) );
@@ -591,10 +588,10 @@
 				if( $result->rowCount() )
 				{
 					// xóa thông tin tài khoản user luôn
-					$result = $db->exec('DELETE FROM vidoco_users WHERE userid=' . $userid);
-					$db->query('DELETE FROM vidoco_users_groups_users WHERE userid=' . $userid);
-					$db->query('DELETE FROM vidoco_users_openid WHERE userid=' . $userid);
-					$db->query('DELETE FROM vidoco_users_info WHERE userid=' . $userid);
+					$result = $db->exec('DELETE FROM ' . $db_config['prefix'] . '_users WHERE userid=' . $userid);
+					$db->query('DELETE FROM ' . $db_config['prefix'] . '_users_groups_users WHERE userid=' . $userid);
+					$db->query('DELETE FROM ' . $db_config['prefix'] . '_users_openid WHERE userid=' . $userid);
+					$db->query('DELETE FROM ' . $db_config['prefix'] . '_users_info WHERE userid=' . $userid);
 					
 					
 					$json['id'][$a] = $userid;
@@ -709,7 +706,7 @@
 				{
 					$implode[]= "CONCAT(u.last_name,' ', u.first_name) LIKE '%" . $db->dblikeescape( $keyword ) . "%' OR username LIKE '%" . $db->dblikeescape( $keyword ) . "%'";
 				}
-				$sql= 'SELECT u.userid, u.username, CONCAT(u.last_name,\'\', u.first_name) AS full_name, u.username, u.email, u.address, u.regdate, u.active, bu.branch_id FROM 
+				$sql= 'SELECT u.userid, u.username, CONCAT(u.last_name,\'\', u.first_name) AS full_name, u.username, u.email, u.regdate, u.active, bu.branch_id FROM 
 				' . NV_USERS_GLOBALTABLE . ' u  RIGHT JOIN ' . TABLE_APPOINTMENT_NAME . '_branch_users bu ON (u.userid = bu.userid) 
 				LEFT JOIN ' . TABLE_APPOINTMENT_NAME . '_calendar c ON (u.userid = c.userid)';
 				
@@ -756,7 +753,7 @@
 		}
 		
 		
-		$sql= 'SELECT u.userid, u.username, CONCAT(u.last_name,\'\', u.first_name) AS full_name, u.username, u.email, u.address, u.regdate, u.active FROM 
+		$sql= 'SELECT u.userid, u.username, CONCAT(u.last_name,\'\', u.first_name) AS full_name, u.username, u.email, u.regdate, u.active FROM 
 		' . NV_USERS_GLOBALTABLE . ' u  RIGHT JOIN ' . NV_USERS_GLOBALTABLE . '_groups_users gu ON (u.userid = gu.userid)';
 		
 		if( !empty( $implode ) )
@@ -913,7 +910,7 @@
 		$doctorsList = array();
 		if( $doctorsArray )
 		{
-			$result = $db->query( 'SELECT userid, username, CONCAT(last_name,\' \', first_name) AS full_name, email, gender, birthday, address FROM ' . NV_USERS_GLOBALTABLE . ' WHERE userid IN ('. implode( ',', $doctorsArray ) .')' );
+			$result = $db->query( 'SELECT userid, username, CONCAT(last_name,\' \', first_name) AS full_name, email, gender, birthday FROM ' . NV_USERS_GLOBALTABLE . ' WHERE userid IN ('. implode( ',', $doctorsArray ) .')' );
 			
 			while( $user = $result->fetch() )
 			{
@@ -1091,7 +1088,6 @@
 				email=:email,
 				username=:username,
 				md5username=:md5username,
-				address=:address,
 				gender=:gender,
 				aspirations_treatment=:aspirations_treatment,
 				medical_history=:medical_history,
@@ -1103,7 +1099,6 @@
 				$stmt->bindParam( ':email', $data['email'], PDO::PARAM_STR );
 				$stmt->bindParam( ':username', $data['phone'], PDO::PARAM_STR );
 				$stmt->bindParam( ':md5username', $data['md5username'], PDO::PARAM_STR );
-				$stmt->bindParam( ':address', $data['address'], PDO::PARAM_STR );
 				$stmt->bindParam( ':gender', $data['gender'], PDO::PARAM_STR );
 				$stmt->bindParam( ':aspirations_treatment', $data['aspirations_treatment'], PDO::PARAM_STR );
 				$stmt->bindParam( ':medical_history', $data['medical_history'], PDO::PARAM_STR );
@@ -1439,7 +1434,7 @@
 		$doctorsList = array();
 		if( $doctorsArray )
 		{
-			$result = $db->query( 'SELECT userid, username, CONCAT(last_name,\' \', first_name) AS full_name, email, gender, birthday, address FROM ' . NV_USERS_GLOBALTABLE . ' WHERE userid IN ('. implode( ',', $doctorsArray ) .')' );
+			$result = $db->query( 'SELECT userid, username, CONCAT(last_name,\' \', first_name) AS full_name, email, gender, birthday FROM ' . NV_USERS_GLOBALTABLE . ' WHERE userid IN ('. implode( ',', $doctorsArray ) .')' );
 			
 			while( $user = $result->fetch() )
 			{
